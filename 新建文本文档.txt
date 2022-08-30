@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <title>Simple example - Editor.md examples</title>
+    <link rel="stylesheet" th:href="@{/editormd/css/style.css}"/>
+    <link rel="stylesheet" th:href="@{/editormd/css/editormd.css}"/>
+    <link rel="shortcut icon" href="https://pandao.github.io/editor.md/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+<div id="layout">
+    <header>
+        <h1>Simple example</h1>
+    </header>
+<!--    <div>-->
+<!--        标题：<input type="text" name="title" id="title">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        作者：<input type="text"  name="author" id="author">-->
+<!--    </div>-->
+
+<!--    <form name="mdEditorForm1" >-->
+<!--        <div class="form-group">-->
+<!--            <label for="recipient-name" class="col-form-label">标题：</label>-->
+<!--            <input type="text" class="form-control" id="recipient-name">-->
+<!--        </div>-->
+<!--        <div id="test-editormd">-->
+<!--            <textarea style="display:none;"></textarea>-->
+<!--        </div>-->
+<!--    </form>-->
+    <div id="mdEditorForm1">
+        <textarea style="display:none;"></textarea>
+    </div>
+
+<!--    添加一个保存按钮-->
+<!--    <button id="save" class="" type="button" onclick="saveContent()">保存</button>-->
+
+<!--    &lt;!&ndash; 存放源文件用于编辑 &ndash;&gt;-->
+<!--    <textarea style="display:none;" id="my-editormd-markdown-doc" name="my-editormd-markdown-doc" placeholder="markdown"></textarea>-->
+<!--    &lt;!&ndash; 第二个隐藏文本域，用来构造生成的HTML代码，方便POST提交 &ndash;&gt;-->
+<!--    <textarea id="my-editormd-html-code" class="editormd-html-textarea" name="my-editormd-html-code" style="display:none;"></textarea>-->
+
+</div>
+
+<script type="text/javascript">
+			var testEditor;
+            $(function() {
+<!--                testEditor = editormd("my-editormd-markdown-doc", {-->
+                testEditor = editormd("mdEditorForm1", {
+                    width: "90%",
+                    height: 640,
+                    syncScrolling: "single",
+                    emoji: true,
+                    path: "../editormd/lib/",
+
+                    //图片上传
+                    imageUpload : true,
+                    imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                    imageUploadURL : "/file/upload",
+                    onload: function () {
+                        console.log('onload', this);
+                    },
+
+                    /*指定需要显示的功能按钮*/
+                     toolbarIcons: function () {
+                     return ["undo", "redo", "|",
+                    "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|",
+                    "h1", "h2", "h3", "h4", "h5", "h6", "|",
+                    "list-ul", "list-ol", "hr", "|",
+                    "link", "reference-link", "image", "code", "preformatted-text",
+                    "code-block", "table", "datetime", "emoji", "html-entities", "pagebreak", "|",
+                    "goto-line", "watch", "preview", "fullscreen", "clear", "search", "|",
+                    "help", "info", "releaseIcon","index"]
+                    },
+
+                    /*自定义功能按钮，下面我自定义了2个，一个是发布，一个是返回首页*/
+                    toolbarIconTexts: {
+                        releaseIcon: "<span bgcolor=\"gray\" >发布</span>",
+                        index : "<span bgcolor=\"red\">返回首页</span>",
+                    },
+
+                    /*给自定义按钮指定回调函数*/
+                    toolbarHandlers: {
+                    releaseIcon: function (cm, icon, cursor, selection) {
+                        var title = $("#recipient-name").val();
+
+
+                        //表单提交
+                        //并没有真正跳转到目标函数
+                        mdEditorForm1.method = "post";
+                        window.alert("before");
+                        console.log("hello");
+                        mdEditorForm1.action = "../article/addArticle";//提交至服务器的路径
+<!--                        window.location.href = '../article/addArticle';-->
+                        mdEditorForm1.submit();
+
+
+                        $.post(
+                            "../article/addArticle",
+                            {"entityType":entityType,"entityId":entityId,"entityUserId":entityUserId,"postId":postId},
+                            function(data) {
+                                data = $.parseJSON(data);
+                                if(data.code == 0) {
+                                    console.log("Test Like JS");
+                                } else {
+                                    alert(data.msg);
+                                }
+                            }
+                        );
+
+
+                    },
+
+                    index : function(){
+                        window.location.href = '../index';
+                    }
+
+                },
+
+
+
+                });
+            });
+
+        </script>
+
+<!--<script>-->
+<!--        function saveContent(){-->
+<!--        var content = $("#my-editormd-html-code").val();//通过id获取<textarea>标签中编辑的内容-->
+<!--	    $.ajax({-->
+<!--        	type:"post",-->
+<!--        	url:"../article/addArticle",//保存数据的接口-->
+<!--        	dataType:"json",-->
+<!--        	data:{'content':content},-->
+<!--        	success:function(data){-->
+<!--        		if(data==1){-->
+<!--        			alert("保存成功");-->
+<!--        		}-->
+<!--			}-->
+<!--        });-->
+<!--}-->
+<!--</script>-->
+
+
+
+
+<script th:src="@{/editormd/js/jquery.min.js}"></script>
+<script th:src="@{/editormd/js/editormd.min.js}"></script>
+</body>
+</html>
